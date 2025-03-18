@@ -36,8 +36,9 @@ jobs:
           echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
 
       - name: Apply Kubernetes Deployment
-        run: |
-          cd $GITHUB_WORKSPACE/kubernetes
-          kubectl apply -f deployment.yaml
-          kubectl apply -f service.yaml
+  run: |
+    cd $GITHUB_WORKSPACE/kubernetes
+    ls -l  # Debugging step to check if files exist
+    kubectl apply -f deployment.yaml
+    kubectl apply -f service.yaml
 
