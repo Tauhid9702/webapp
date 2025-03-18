@@ -51,6 +51,9 @@ jobs:
           chmod +x minikube-linux-amd64
           sudo mv minikube-linux-amd64 /usr/local/bin/minikube
           minikube start --driver=docker
+          
+      - name: Debug File Structure
+  run: ls -R
  
       - name: Deploy to Minikube
         run: |
