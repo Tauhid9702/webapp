@@ -12,23 +12,46 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set Up Minikube
+        run: |
+          curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+          sudo install minikube-linux-amd64 /usr/local/bin/minikube
+          minikube start --driver=docker
+          minikube status
+
+      - name: Use Minikube Docker Daemon
+        run: |
+          eval $(minikube docker-env)
+          docker info
+
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      - name: Build Docker image
-        run: docker build -t tauhid1/webapp:latest .
-
-      - name: Push Docker image to Docker Hub
-        run: docker push tauhid1/webapp:latest
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t tauhid1/webapp:latest .
+          docker push tauhid1/webapp:latest
 
   deploy:
     runs-on: ubuntu-latest
     needs: build-and-push
     steps:
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Apply Kubernetes manifests
+      - name: Set Up Minikube
+        run: |
+          minikube start --driver=docker
+          minikube status
+          kubectl cluster-info
+
+      - name: Apply Minikube Manifests
         run: |
           kubectl apply -f kubernetes/deployment.yaml
           kubectl apply -f kubernetes/service.yaml
+
+      - name: Verify Deployment
+        run: |
+          kubectl get pods -o wide
+          kubectl get services
+
