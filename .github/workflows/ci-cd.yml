@@ -27,17 +27,17 @@ jobs:
     needs: build-and-push
 
     steps:
-      - name: SSH into Server and Deploy
-        uses: appleboy/ssh-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd ~/webapp
-            git pull origin main  # Ensure latest code is fetched
-            docker pull tauhid1/webapp:latest
-            docker stop webapp || true
-            docker rm webapp || true
-            docker run -d -p 80:5000 --name webapp tauhid1/webapp:latest
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set Up Kubernetes Config
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
+
+      - name: Apply Kubernetes Deployment
+        run: |
+          cd $GITHUB_WORKSPACE/kubernetes
+          kubectl apply -f deployment.yaml
+          kubectl apply -f service.yaml
 
