@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+  labels:
+    app: webapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+        - name: webapp
+          image: tauhid1/webapp:latest  # Updated Docker Hub username
+          ports:
+            - containerPort: 5000
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 3
+            periodSeconds: 5
