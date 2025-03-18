@@ -4,7 +4,7 @@ import random
 app = Flask(__name__)
 
 jokes = [
-    "Why don't scientists trust atoms? Because they make up something!",
+    "Why don't scientists trust atoms? Because they make up something: Maria!",
 ]
 
 quotes = [
